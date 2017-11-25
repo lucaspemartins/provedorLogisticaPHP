@@ -34,15 +34,12 @@
 		// Update some fields
 		$newEntrega = [];
 		
-		if (isset($body->nomeRecebedor)) {
-			$newEntrega['nome_recebedor']	= $body->nomeRecebedor;		
-		}
-		if (isset($body->cpfRecebedor)) {
-			$newEntrega['cpf_recebedor']	= $body->cpfRecebedor;		
-		}
-		if (isset($body->dataHoraEntrega)) {
+		if (isset($body->nomeRecebedor) && isset($body->cpfRecebedor) && isset($body->dataHoraEntrega)) {
+			$newEntrega['nome_recebedor']	= $body->nomeRecebedor;	
+			$newEntrega['cpf_recebedor']	= $body->cpfRecebedor;	
 			$newEntrega['data_hora_entrega'] = date("Y-m-d H:i:s",strtotime(str_replace('/','-',$body->dataHoraEntrega)));		
 		}
+		else return $response->withStatus(400);
 		
 		if ($entrega->update($newEntrega) == 0) {
 			return $response->withStatus(500);
