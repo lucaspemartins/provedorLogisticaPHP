@@ -1,8 +1,12 @@
 <?php 
     use \Psr\Http\Message\ServerRequestInterface as Request;
     use \Psr\Http\Message\ResponseInterface as Response;
-    
-    require '../vendor/autoload.php';
+	use \Slim\Middleware\HttpBasicAuthentication\PdoAuthenticator;
+    	
+    require '../vendor/autoload.php';	
+	
+	$username = !empty($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : null;
+	$password = !empty($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : null;
 	
 	$config['displayErrorDetails'] = true;
 	$config['addContentLengthHeader'] = false;
@@ -22,6 +26,31 @@
 		$db= new NotORM($pdo);
 		return $db;
 	};
+	
+	$usersList["username"] = "";
+	$usersList["password"] = "";
+	
+	if ($username != null && $password != null) {
+		$users = $container['db']->users->where("username = ?", $username)->where("password = ?", $password);
+		
+		foreach ($users as $users) {
+			$usersList["username"] = $users["username"];
+			$usersList["password"] = $users["password"];
+		}
+	}
+	
+	$app->add(new \Slim\Middleware\HttpBasicAuthentication([
+		"users" => [
+			$usersList["username"] => $usersList["password"]
+		],
+		"error" => function ($request, $response, $arguments) {
+			$data["status"] = "error";
+			$data["message"] = $arguments["message"];
+			return $response
+				->withHeader("Content-Type", "application/json")
+				->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		}
+	]));
 	
     $app->put('/entrega/{numeroPedido}', function(Request $request, Response $response) {
 		$numeroPedido = $request->getAttribute('numeroPedido');

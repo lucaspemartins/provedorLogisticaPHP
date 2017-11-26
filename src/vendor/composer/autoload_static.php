@@ -14,6 +14,7 @@ class ComposerStaticInit96b0f8b6b67b96ad1aa4b68d35bab1da
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
+            'Slim\\Middleware\\' => 16,
             'Slim\\' => 5,
         ),
         'P' => 
@@ -32,6 +33,10 @@ class ComposerStaticInit96b0f8b6b67b96ad1aa4b68d35bab1da
     );
 
     public static $prefixDirsPsr4 = array (
+        'Slim\\Middleware\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/tuupola/slim-basic-auth/src',
+        ),
         'Slim\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
